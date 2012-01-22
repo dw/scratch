@@ -63,16 +63,18 @@ def read_phase(to_copy):
             buf = fp.read(MAX_BUF - buffered)
         if buf:
             buffered += len(buf)
-            buffers.append((src, dst, buf))
+            buffers.append((src, dst, start, buf))
             to_copy.append((src, dst, start + len(buf)))
 
     return buffered, buffers
 
 
 def write_phase(buffers):
-    for src_path, dst_path, buf in buffers:
-        with file(dst_path, 'ab') as fp:
+    for src_path, dst_path, start, buf in buffers:
+        with file(dst_path, 'wb') as fp:
+            fp.seek(start)
             fp.write(buf)
+            fp.truncate()
         print 'write', dst_path, len(buf)
 
 
