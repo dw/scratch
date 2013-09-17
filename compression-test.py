@@ -11,6 +11,11 @@ total_ba = 0
 total_li = 0
 
 
+def longest_common_prefix(strs):
+    plen = min(len(s) for s in str)
+    prefix = strs[0][:plen]
+
+
 
 def pack_sizes(cur):
     s = pack_int('', len(cur))
