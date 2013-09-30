@@ -1,0 +1,1 @@
+virt-install -n dev1 -r 512 --nographics --os-type=linux --extra-args="console=tty0 console=ttyS0,115200n8"  -v -l  http://ftp.de.debian.org/debian/dists/squeeze/main/installer-amd64/  --disk=/dev/h1/dev1 --accelerate 
