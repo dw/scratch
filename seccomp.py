@@ -59,7 +59,7 @@ class SecureEvalHost(object):
     def _child_main(self):
         self.host.close()
         resource.setrlimit(resource.RLIMIT_CPU, (1, 1))
-        #prctl.set_seccomp(True)
+        prctl.set_seccomp(True)
         while True:
             sz, = struct.unpack('>L', read_exact(self.child, 4))
             doc = json.loads(read_exact(self.child, sz))
