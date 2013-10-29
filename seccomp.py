@@ -58,7 +58,7 @@ class SecureEvalHost(object):
 
     def _child_main(self):
         self.host.close()
-        for fd in xrange(1024):
+        for fd in map(int, os.listdir('/proc/self/fd')):
             if fd != self.child.fileno():
                 try:
                     os.close(fd)
