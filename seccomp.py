@@ -87,7 +87,13 @@ class SecureEvalHost(object):
         return goobs['result']
 
 
-sec = SecureEvalHost()
-sec.start_child()
-print sec.eval('1+1')
-sec.kill_child()
+def go():
+    sec = SecureEvalHost()
+    sec.start_child()
+    try:
+        print sec.eval('1+1')
+    finally:
+        sec.kill_child()
+
+if __name__ == '__main__':
+    go()
