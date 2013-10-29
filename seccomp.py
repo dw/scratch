@@ -58,6 +58,13 @@ class SecureEvalHost(object):
 
     def _child_main(self):
         self.host.close()
+        for fd in xrange(1024):
+            if fd != self.child.fileno():
+                try:
+                    os.close(fd)
+                except OSError:
+                    pass
+
         resource.setrlimit(resource.RLIMIT_CPU, (1, 1))
         prctl.set_seccomp(True)
         while True:
