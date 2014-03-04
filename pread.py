@@ -9,13 +9,14 @@ ffi.cdef('void perror(const char *);')
 lib = ffi.dlopen(None)
 pread = lib.pread
 
+start = 0x7fff2537b000
 
-thing = ffi.new('char[]', 4096)
+thing = ffi.new('char[]', 8192)
 thingbuf = ffi.buffer(thing)
 
 
-fp = open('/proc/7404/mem', 'rb')
+fp = open('/proc/15928/mem', 'rb')
 fd = fp.fileno()
 
-print pread(fd, thing, len(thing), 0x7f8e825ad000)
-print thingbuf[:]
+print pread(fd, thing, len(thing), start)
+file('thing', 'w').write(thingbuf[:])

@@ -1,0 +1,1 @@
+virt-install -n win8 -r 5120 --os-type=windows --disk=/dev/h1/win8 --cdrom=/home/win8.iso --graphics=spice
