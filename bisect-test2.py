@@ -7,8 +7,8 @@ import zlib
 
 import sortedfile
 
-maxcomp = 6
-target = 7500
+maxcomp = 10
+target = 4000
 
 lines = []
 line_sum = 0
