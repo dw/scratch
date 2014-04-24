@@ -17,7 +17,10 @@ for row in db.execute('SELECT * FROM Messages ORDER BY timestamp'):
         msg += ['* %s parted' % (row['author'],)]
     else:
         msg += ['%s<%s>' % ('*' if row['edited_by'] else '', row['author'],)]
-        msg += [lxml.html.fromstring(row['body_xml']).text_content()]
+        try:
+            msg += [lxml.html.fromstring(row['body_xml']).text_content()]
+        except:
+            continue
     print ' '.join(msg).encode('utf-8')
 
 
