@@ -1,0 +1,41 @@
+#!/bin/bash
+
+./configure \
+    --target-list=i386-softmmu,x86_64-softmmu \
+    --enable-debug \
+    --disable-strip \
+    --disable-stack-protector \
+    --disable-sdl \
+    --disable-gtk \
+    --disable-virtfs \
+    --enable-vnc \
+    --disable-xen \
+    --disable-brlapi \
+    --enable-curses \
+    --disable-curl \
+    --disable-fdt \
+    --disable-bluez \
+    --enable-kvm \
+    --disable-rdma \
+    --enable-system \
+    --disable-user \
+    --disable-vde \
+    --disable-netmap \
+    --disable-linux-aio \
+    --disable-cap-ng \
+    --disable-attr \
+    --disable-docs \
+    --enable-vhost-net \
+    --disable-spice \
+    --disable-libiscsi \
+    --disable-libnfs \
+    --disable-smartcard-nss \
+    --disable-libusb \
+    --disable-usb-redir \
+    --disable-guest-agent \
+    --disable-seccomp \
+    --enable-coroutine-pool \
+    --disable-glusterfs \
+    --disable-libssh2 \
+    --disable-vhdx \
+    --disable-quorum
