@@ -1,0 +1,3 @@
+#!/bin/bash
+
+../configure --prefix=/usr --sysconfdir=/etc --mandir=/usr/share/man --with-docdir=/usr/share/doc --with-mailpath=/var/mail --disable-dependency-tracking --enable-compressed --enable-debug --enable-fcntl --enable-hcache --with-curses --with-gnutls --with-gss --without-gdbm --without-bdb --without-qdbm
