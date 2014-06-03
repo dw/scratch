@@ -76,6 +76,8 @@ def write_phase(buffers):
             fp.write(buf)
             fp.truncate()
         print 'write', dst_path, len(buf)
+    import os
+    os.system('sync')
 
 
 def do_copy(to_copy):
