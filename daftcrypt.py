@@ -6,7 +6,7 @@ import hmac
 import os
 
 def transform(s, key, iv):
-    h = hashlib.sha512(key+iv)
+    h = hashlib.sha512(iv)
     buf = bytearray(s)
     blen = len(buf)
     digest = h.digest()
@@ -14,6 +14,7 @@ def transform(s, key, iv):
         i = 0
         while i < blen:
             h.update(digest)
+            h.update(key)
             digest = h.digest()
             for char in bytearray(digest):
                 buf[i] ^= char
