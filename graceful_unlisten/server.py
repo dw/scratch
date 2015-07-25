@@ -17,6 +17,7 @@ import ctypes
 import os
 import select
 import socket
+import time
 
 SO_ATTACH_FILTER = 26
 
@@ -34,14 +35,24 @@ class BpfInstruction(ctypes.Structure):
         ('k', ctypes.c_uint32),
     ]
 
+FILTER = [
+    [48, 0, 0, 13],     # 0: load tcp_header.flags into A register
+    [21, 0, 1, 2],      # 1: if A register == SYN (2) GOTO 2 ELSE GOTO 3
+    [6, 0, 0, 0],       # 2: return 0 (drop)
+    [6, 0, 0, 262144],  # 3: return 0x40000 (accept)
+]
+
 def attach_reject_filter(sock):
-    insn = BpfInstruction()
-    insn.code = 0x06        # RET
-    insn.k = 0x0            # Reject
+    insns = (BpfInstruction * len(FILTER))()
+    for i, (code, jt, jf, k) in enumerate(FILTER):
+        insns[i].code = code
+        insns[i].jt = jt
+        insns[i].jf = jf
+        insns[i].k = k
 
     prog = BpfProgram()
-    prog.bf_len = 1         # Opcode count
-    prog.bf_insns = ctypes.addressof(insn)
+    prog.bf_len = len(FILTER)  # Opcode count
+    prog.bf_insns = ctypes.addressof(insns)
 
     sock.setsockopt(socket.SOL_SOCKET, SO_ATTACH_FILTER, buffer(prog))
 
@@ -65,8 +76,10 @@ while not os.path.exists('stop'):
 
 if file('stop').read().startswith('graceful'):
     # Time to shutdown. Attach the filter. SYN sent to the listening port will
-    # be dropped by the kernel.
+    # be dropped by the kernel. Allow 2 seconds for any outstanding SYN|ACK,
+    # ACK handshakes to complete before examining backlog.
     attach_reject_filter(s)
+    time.sleep(2)
 
     while not is_backlog_empty(s):
         print 'backlog!'
