@@ -14,6 +14,8 @@
 #
 
 import ctypes
+import os
+import select
 import socket
 
 SO_ATTACH_FILTER = 26
@@ -43,19 +45,33 @@ def attach_reject_filter(sock):
 
     sock.setsockopt(socket.SOL_SOCKET, SO_ATTACH_FILTER, buffer(prog))
 
+def is_backlog_empty(sock):
+    rfds, _, _ = select.select([sock.fileno()], [], [], 0.0)
+    return len(rfds) == 0
+
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-s.bind(('', 9121))
+s.bind(('127.1', 6969))
 
 # Listen and accept clients for a while.
 s.listen(5)
-client, _ = s.accept()
-
-# Time to shutdown. Attach the filter. SYN sent to the listening port will be
-# dropped by the kernel.
-attach_reject_filter(s)
 
 # However existing client connections continue to function normally.
-while 1:
-    print client.recv(100)
+while not os.path.exists('stop'):
+    client, _ = s.accept()
     client.send('OK\n')
+    client.close()
+
+if file('stop').read().startswith('graceful'):
+    # Time to shutdown. Attach the filter. SYN sent to the listening port will
+    # be dropped by the kernel.
+    attach_reject_filter(s)
+
+    while not is_backlog_empty(s):
+        print 'backlog!'
+        client, _ = s.accept()
+        client.send('OK\n')
+        client.close()
+
+s.close()
