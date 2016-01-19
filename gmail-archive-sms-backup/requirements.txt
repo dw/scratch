@@ -1,0 +1,5 @@
+imapclient
+keyring
+lxml
+phonenumbers
+vobject
