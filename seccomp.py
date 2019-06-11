@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# pip install python-prctl cffi
-
+import ctypes
 import json
 import os
 import resource
@@ -29,16 +28,18 @@ import signal
 import socket
 import struct
 
-import cffi
-import prctl
+_libc = ctypes.CDLL(None)
+_exit = _libc._exit
+_prctl = _libc.prctl
 
-_ffi = cffi.FFI()
-_ffi.cdef('void _exit(int);')
-_libc = _ffi.dlopen(None)
+PR_SET_SECCOMP = 22
+SECCOMP_MODE_STRICT = 1
 
-def _exit(n=1):
-    """Invoke _exit(2) system call."""
-    _libc._exit(n)
+
+def enable_seccomp():
+    rc = _prctl(PR_SET_SECCOMP, SECCOMP_MODE_STRICT, 0)
+    assert rc == 0
+
 
 def read_exact(fp, n):
     buf = ''
@@ -87,7 +88,7 @@ class SecureEvalHost(object):
                     pass
 
         resource.setrlimit(resource.RLIMIT_CPU, (1, 1))
-        prctl.set_seccomp(True)
+        enable_seccomp()
         while True:
             sz, = struct.unpack('>L', read_exact(self.child, 4))
             doc = json.loads(read_exact(self.child, sz))
